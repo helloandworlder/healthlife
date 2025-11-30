@@ -9,6 +9,7 @@ class GoalLogs extends Table {
   IntColumn get goalId => integer().references(Goals, #id, onDelete: KeyAction.cascade)();
   DateTimeColumn get date => dateTime()();
   IntColumn get progress => integer().withDefault(const Constant(0))();
+  BoolColumn get expAwarded => boolean().withDefault(const Constant(false))();
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
 
   @override

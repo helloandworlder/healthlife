@@ -48,10 +48,17 @@ class GoalsNotifier extends _$GoalsNotifier {
       final newProgress = await db.goalDao.incrementProgress(goalId, today);
       
       if (newProgress >= goal.target) {
-        await gamification.awardExp(GamificationService.expPerGoal);
-        ref.invalidate(petStateProvider);
+        // Only award exp if not already awarded today
+        final alreadyAwarded = await db.goalDao.isExpAwarded(goalId, today);
+        if (!alreadyAwarded) {
+          await gamification.awardExp(GamificationService.expPerGoal);
+          await db.goalDao.markExpAwarded(goalId, today);
+          ref.invalidate(petStateProvider);
+          ref.invalidateSelf();
+          return ToggleResult.completedWithExp;
+        }
         ref.invalidateSelf();
-        return ToggleResult.completed;
+        return ToggleResult.completedNoExp;
       }
       
       ref.invalidateSelf();

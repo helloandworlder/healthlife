@@ -150,7 +150,7 @@ class _GoalReviewForDateProviderElement
   DateTime get date => (origin as GoalReviewForDateProvider).date;
 }
 
-String _$goalsNotifierHash() => r'4c42dc6affbc36b2d7ba656a57b16cd1e7daeccd';
+String _$goalsNotifierHash() => r'e03777ac783dbed15fe1d58beecd0ca71d2ad44f';
 
 /// See also [GoalsNotifier].
 @ProviderFor(GoalsNotifier)

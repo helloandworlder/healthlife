@@ -81,18 +81,20 @@ class DashboardPage extends ConsumerWidget {
   }
 
   void _showCreatePlanSheet(BuildContext context, WidgetRef ref, DashboardState state) {
+    final notifier = ref.read(dashboardNotifierProvider.notifier);
+    
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (context) => CreatePlanSheet(
+      builder: (sheetContext) => CreatePlanSheet(
         initialWeight: state.todaySummary.latestWeight,
         onCreatePlan: ({
           required double initialWeight,
           required double targetWeight,
           required int durationDays,
           required int dailyCalorieDeficit,
-        }) {
-          ref.read(dashboardNotifierProvider.notifier).createPlan(
+        }) async {
+          await notifier.createPlan(
             initialWeight: initialWeight,
             targetWeight: targetWeight,
             durationDays: durationDays,

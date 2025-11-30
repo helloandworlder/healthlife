@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ChatMessage {
 
- String get id; MessageRole get role; String get content; DateTime get timestamp; bool get isLoading; String? get error;
+ String get id; MessageRole get role; String get content; DateTime get timestamp; bool get isLoading; String? get error; String? get thinkingContent; ToolResult? get toolResult;
 /// Create a copy of ChatMessage
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $ChatMessageCopyWith<ChatMessage> get copyWith => _$ChatMessageCopyWithImpl<Chat
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatMessage&&(identical(other.id, id) || other.id == id)&&(identical(other.role, role) || other.role == role)&&(identical(other.content, content) || other.content == content)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.error, error) || other.error == error));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatMessage&&(identical(other.id, id) || other.id == id)&&(identical(other.role, role) || other.role == role)&&(identical(other.content, content) || other.content == content)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.error, error) || other.error == error)&&(identical(other.thinkingContent, thinkingContent) || other.thinkingContent == thinkingContent)&&(identical(other.toolResult, toolResult) || other.toolResult == toolResult));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,role,content,timestamp,isLoading,error);
+int get hashCode => Object.hash(runtimeType,id,role,content,timestamp,isLoading,error,thinkingContent,toolResult);
 
 @override
 String toString() {
-  return 'ChatMessage(id: $id, role: $role, content: $content, timestamp: $timestamp, isLoading: $isLoading, error: $error)';
+  return 'ChatMessage(id: $id, role: $role, content: $content, timestamp: $timestamp, isLoading: $isLoading, error: $error, thinkingContent: $thinkingContent, toolResult: $toolResult)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $ChatMessageCopyWith<$Res>  {
   factory $ChatMessageCopyWith(ChatMessage value, $Res Function(ChatMessage) _then) = _$ChatMessageCopyWithImpl;
 @useResult
 $Res call({
- String id, MessageRole role, String content, DateTime timestamp, bool isLoading, String? error
+ String id, MessageRole role, String content, DateTime timestamp, bool isLoading, String? error, String? thinkingContent, ToolResult? toolResult
 });
 
 
@@ -62,7 +62,7 @@ class _$ChatMessageCopyWithImpl<$Res>
 
 /// Create a copy of ChatMessage
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? role = null,Object? content = null,Object? timestamp = null,Object? isLoading = null,Object? error = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? role = null,Object? content = null,Object? timestamp = null,Object? isLoading = null,Object? error = freezed,Object? thinkingContent = freezed,Object? toolResult = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
@@ -70,7 +70,9 @@ as MessageRole,content: null == content ? _self.content : content // ignore: cas
 as String,timestamp: null == timestamp ? _self.timestamp : timestamp // ignore: cast_nullable_to_non_nullable
 as DateTime,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,thinkingContent: freezed == thinkingContent ? _self.thinkingContent : thinkingContent // ignore: cast_nullable_to_non_nullable
+as String?,toolResult: freezed == toolResult ? _self.toolResult : toolResult // ignore: cast_nullable_to_non_nullable
+as ToolResult?,
   ));
 }
 
@@ -152,10 +154,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  MessageRole role,  String content,  DateTime timestamp,  bool isLoading,  String? error)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  MessageRole role,  String content,  DateTime timestamp,  bool isLoading,  String? error,  String? thinkingContent,  ToolResult? toolResult)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ChatMessage() when $default != null:
-return $default(_that.id,_that.role,_that.content,_that.timestamp,_that.isLoading,_that.error);case _:
+return $default(_that.id,_that.role,_that.content,_that.timestamp,_that.isLoading,_that.error,_that.thinkingContent,_that.toolResult);case _:
   return orElse();
 
 }
@@ -173,10 +175,10 @@ return $default(_that.id,_that.role,_that.content,_that.timestamp,_that.isLoadin
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  MessageRole role,  String content,  DateTime timestamp,  bool isLoading,  String? error)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  MessageRole role,  String content,  DateTime timestamp,  bool isLoading,  String? error,  String? thinkingContent,  ToolResult? toolResult)  $default,) {final _that = this;
 switch (_that) {
 case _ChatMessage():
-return $default(_that.id,_that.role,_that.content,_that.timestamp,_that.isLoading,_that.error);}
+return $default(_that.id,_that.role,_that.content,_that.timestamp,_that.isLoading,_that.error,_that.thinkingContent,_that.toolResult);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -190,10 +192,10 @@ return $default(_that.id,_that.role,_that.content,_that.timestamp,_that.isLoadin
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  MessageRole role,  String content,  DateTime timestamp,  bool isLoading,  String? error)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  MessageRole role,  String content,  DateTime timestamp,  bool isLoading,  String? error,  String? thinkingContent,  ToolResult? toolResult)?  $default,) {final _that = this;
 switch (_that) {
 case _ChatMessage() when $default != null:
-return $default(_that.id,_that.role,_that.content,_that.timestamp,_that.isLoading,_that.error);case _:
+return $default(_that.id,_that.role,_that.content,_that.timestamp,_that.isLoading,_that.error,_that.thinkingContent,_that.toolResult);case _:
   return null;
 
 }
@@ -205,7 +207,7 @@ return $default(_that.id,_that.role,_that.content,_that.timestamp,_that.isLoadin
 
 
 class _ChatMessage extends ChatMessage {
-  const _ChatMessage({required this.id, required this.role, required this.content, required this.timestamp, this.isLoading = false, this.error}): super._();
+  const _ChatMessage({required this.id, required this.role, required this.content, required this.timestamp, this.isLoading = false, this.error, this.thinkingContent, this.toolResult}): super._();
   
 
 @override final  String id;
@@ -214,6 +216,8 @@ class _ChatMessage extends ChatMessage {
 @override final  DateTime timestamp;
 @override@JsonKey() final  bool isLoading;
 @override final  String? error;
+@override final  String? thinkingContent;
+@override final  ToolResult? toolResult;
 
 /// Create a copy of ChatMessage
 /// with the given fields replaced by the non-null parameter values.
@@ -225,16 +229,16 @@ _$ChatMessageCopyWith<_ChatMessage> get copyWith => __$ChatMessageCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatMessage&&(identical(other.id, id) || other.id == id)&&(identical(other.role, role) || other.role == role)&&(identical(other.content, content) || other.content == content)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.error, error) || other.error == error));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatMessage&&(identical(other.id, id) || other.id == id)&&(identical(other.role, role) || other.role == role)&&(identical(other.content, content) || other.content == content)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.error, error) || other.error == error)&&(identical(other.thinkingContent, thinkingContent) || other.thinkingContent == thinkingContent)&&(identical(other.toolResult, toolResult) || other.toolResult == toolResult));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,role,content,timestamp,isLoading,error);
+int get hashCode => Object.hash(runtimeType,id,role,content,timestamp,isLoading,error,thinkingContent,toolResult);
 
 @override
 String toString() {
-  return 'ChatMessage(id: $id, role: $role, content: $content, timestamp: $timestamp, isLoading: $isLoading, error: $error)';
+  return 'ChatMessage(id: $id, role: $role, content: $content, timestamp: $timestamp, isLoading: $isLoading, error: $error, thinkingContent: $thinkingContent, toolResult: $toolResult)';
 }
 
 
@@ -245,7 +249,7 @@ abstract mixin class _$ChatMessageCopyWith<$Res> implements $ChatMessageCopyWith
   factory _$ChatMessageCopyWith(_ChatMessage value, $Res Function(_ChatMessage) _then) = __$ChatMessageCopyWithImpl;
 @override @useResult
 $Res call({
- String id, MessageRole role, String content, DateTime timestamp, bool isLoading, String? error
+ String id, MessageRole role, String content, DateTime timestamp, bool isLoading, String? error, String? thinkingContent, ToolResult? toolResult
 });
 
 
@@ -262,7 +266,7 @@ class __$ChatMessageCopyWithImpl<$Res>
 
 /// Create a copy of ChatMessage
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? role = null,Object? content = null,Object? timestamp = null,Object? isLoading = null,Object? error = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? role = null,Object? content = null,Object? timestamp = null,Object? isLoading = null,Object? error = freezed,Object? thinkingContent = freezed,Object? toolResult = freezed,}) {
   return _then(_ChatMessage(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
@@ -270,7 +274,9 @@ as MessageRole,content: null == content ? _self.content : content // ignore: cas
 as String,timestamp: null == timestamp ? _self.timestamp : timestamp // ignore: cast_nullable_to_non_nullable
 as DateTime,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,thinkingContent: freezed == thinkingContent ? _self.thinkingContent : thinkingContent // ignore: cast_nullable_to_non_nullable
+as String?,toolResult: freezed == toolResult ? _self.toolResult : toolResult // ignore: cast_nullable_to_non_nullable
+as ToolResult?,
   ));
 }
 

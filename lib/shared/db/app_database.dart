@@ -99,7 +99,10 @@ class AppDatabase extends _$AppDatabase {
           ));
         },
         onUpgrade: (m, from, to) async {
-          // 未来版本迁移
+          // 版本 1 -> 2: 添加 goal_logs.exp_awarded 字段
+          if (from < 2) {
+            await m.addColumn(goalLogs, goalLogs.expAwarded);
+          }
         },
       );
 }

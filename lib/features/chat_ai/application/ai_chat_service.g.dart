@@ -23,7 +23,7 @@ final aiConfigProvider = AutoDisposeFutureProvider<AiConfig>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef AiConfigRef = AutoDisposeFutureProviderRef<AiConfig>;
-String _$aiChatServiceHash() => r'615fbcfeed845d5d93c0e7392ec2ca90e17429dc';
+String _$aiChatServiceHash() => r'f4877b6caca2e2d8942d35794f6c0c76c63efd3c';
 
 /// See also [aiChatService].
 @ProviderFor(aiChatService)

@@ -2911,6 +2911,21 @@ class $GoalLogsTable extends GoalLogs with TableInfo<$GoalLogsTable, GoalLog> {
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
+  static const VerificationMeta _expAwardedMeta = const VerificationMeta(
+    'expAwarded',
+  );
+  @override
+  late final GeneratedColumn<bool> expAwarded = GeneratedColumn<bool>(
+    'exp_awarded',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("exp_awarded" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
   );
@@ -2924,7 +2939,14 @@ class $GoalLogsTable extends GoalLogs with TableInfo<$GoalLogsTable, GoalLog> {
     defaultValue: currentDateAndTime,
   );
   @override
-  List<GeneratedColumn> get $columns => [id, goalId, date, progress, updatedAt];
+  List<GeneratedColumn> get $columns => [
+    id,
+    goalId,
+    date,
+    progress,
+    expAwarded,
+    updatedAt,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -2962,6 +2984,12 @@ class $GoalLogsTable extends GoalLogs with TableInfo<$GoalLogsTable, GoalLog> {
         progress.isAcceptableOrUnknown(data['progress']!, _progressMeta),
       );
     }
+    if (data.containsKey('exp_awarded')) {
+      context.handle(
+        _expAwardedMeta,
+        expAwarded.isAcceptableOrUnknown(data['exp_awarded']!, _expAwardedMeta),
+      );
+    }
     if (data.containsKey('updated_at')) {
       context.handle(
         _updatedAtMeta,
@@ -2997,6 +3025,10 @@ class $GoalLogsTable extends GoalLogs with TableInfo<$GoalLogsTable, GoalLog> {
         DriftSqlType.int,
         data['${effectivePrefix}progress'],
       )!,
+      expAwarded: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}exp_awarded'],
+      )!,
       updatedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
@@ -3015,12 +3047,14 @@ class GoalLog extends DataClass implements Insertable<GoalLog> {
   final int goalId;
   final DateTime date;
   final int progress;
+  final bool expAwarded;
   final DateTime updatedAt;
   const GoalLog({
     required this.id,
     required this.goalId,
     required this.date,
     required this.progress,
+    required this.expAwarded,
     required this.updatedAt,
   });
   @override
@@ -3030,6 +3064,7 @@ class GoalLog extends DataClass implements Insertable<GoalLog> {
     map['goal_id'] = Variable<int>(goalId);
     map['date'] = Variable<DateTime>(date);
     map['progress'] = Variable<int>(progress);
+    map['exp_awarded'] = Variable<bool>(expAwarded);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
   }
@@ -3040,6 +3075,7 @@ class GoalLog extends DataClass implements Insertable<GoalLog> {
       goalId: Value(goalId),
       date: Value(date),
       progress: Value(progress),
+      expAwarded: Value(expAwarded),
       updatedAt: Value(updatedAt),
     );
   }
@@ -3054,6 +3090,7 @@ class GoalLog extends DataClass implements Insertable<GoalLog> {
       goalId: serializer.fromJson<int>(json['goalId']),
       date: serializer.fromJson<DateTime>(json['date']),
       progress: serializer.fromJson<int>(json['progress']),
+      expAwarded: serializer.fromJson<bool>(json['expAwarded']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
   }
@@ -3065,6 +3102,7 @@ class GoalLog extends DataClass implements Insertable<GoalLog> {
       'goalId': serializer.toJson<int>(goalId),
       'date': serializer.toJson<DateTime>(date),
       'progress': serializer.toJson<int>(progress),
+      'expAwarded': serializer.toJson<bool>(expAwarded),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
   }
@@ -3074,12 +3112,14 @@ class GoalLog extends DataClass implements Insertable<GoalLog> {
     int? goalId,
     DateTime? date,
     int? progress,
+    bool? expAwarded,
     DateTime? updatedAt,
   }) => GoalLog(
     id: id ?? this.id,
     goalId: goalId ?? this.goalId,
     date: date ?? this.date,
     progress: progress ?? this.progress,
+    expAwarded: expAwarded ?? this.expAwarded,
     updatedAt: updatedAt ?? this.updatedAt,
   );
   GoalLog copyWithCompanion(GoalLogsCompanion data) {
@@ -3088,6 +3128,9 @@ class GoalLog extends DataClass implements Insertable<GoalLog> {
       goalId: data.goalId.present ? data.goalId.value : this.goalId,
       date: data.date.present ? data.date.value : this.date,
       progress: data.progress.present ? data.progress.value : this.progress,
+      expAwarded: data.expAwarded.present
+          ? data.expAwarded.value
+          : this.expAwarded,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
   }
@@ -3099,13 +3142,15 @@ class GoalLog extends DataClass implements Insertable<GoalLog> {
           ..write('goalId: $goalId, ')
           ..write('date: $date, ')
           ..write('progress: $progress, ')
+          ..write('expAwarded: $expAwarded, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, goalId, date, progress, updatedAt);
+  int get hashCode =>
+      Object.hash(id, goalId, date, progress, expAwarded, updatedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -3114,6 +3159,7 @@ class GoalLog extends DataClass implements Insertable<GoalLog> {
           other.goalId == this.goalId &&
           other.date == this.date &&
           other.progress == this.progress &&
+          other.expAwarded == this.expAwarded &&
           other.updatedAt == this.updatedAt);
 }
 
@@ -3122,12 +3168,14 @@ class GoalLogsCompanion extends UpdateCompanion<GoalLog> {
   final Value<int> goalId;
   final Value<DateTime> date;
   final Value<int> progress;
+  final Value<bool> expAwarded;
   final Value<DateTime> updatedAt;
   const GoalLogsCompanion({
     this.id = const Value.absent(),
     this.goalId = const Value.absent(),
     this.date = const Value.absent(),
     this.progress = const Value.absent(),
+    this.expAwarded = const Value.absent(),
     this.updatedAt = const Value.absent(),
   });
   GoalLogsCompanion.insert({
@@ -3135,6 +3183,7 @@ class GoalLogsCompanion extends UpdateCompanion<GoalLog> {
     required int goalId,
     required DateTime date,
     this.progress = const Value.absent(),
+    this.expAwarded = const Value.absent(),
     this.updatedAt = const Value.absent(),
   }) : goalId = Value(goalId),
        date = Value(date);
@@ -3143,6 +3192,7 @@ class GoalLogsCompanion extends UpdateCompanion<GoalLog> {
     Expression<int>? goalId,
     Expression<DateTime>? date,
     Expression<int>? progress,
+    Expression<bool>? expAwarded,
     Expression<DateTime>? updatedAt,
   }) {
     return RawValuesInsertable({
@@ -3150,6 +3200,7 @@ class GoalLogsCompanion extends UpdateCompanion<GoalLog> {
       if (goalId != null) 'goal_id': goalId,
       if (date != null) 'date': date,
       if (progress != null) 'progress': progress,
+      if (expAwarded != null) 'exp_awarded': expAwarded,
       if (updatedAt != null) 'updated_at': updatedAt,
     });
   }
@@ -3159,6 +3210,7 @@ class GoalLogsCompanion extends UpdateCompanion<GoalLog> {
     Value<int>? goalId,
     Value<DateTime>? date,
     Value<int>? progress,
+    Value<bool>? expAwarded,
     Value<DateTime>? updatedAt,
   }) {
     return GoalLogsCompanion(
@@ -3166,6 +3218,7 @@ class GoalLogsCompanion extends UpdateCompanion<GoalLog> {
       goalId: goalId ?? this.goalId,
       date: date ?? this.date,
       progress: progress ?? this.progress,
+      expAwarded: expAwarded ?? this.expAwarded,
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }
@@ -3185,6 +3238,9 @@ class GoalLogsCompanion extends UpdateCompanion<GoalLog> {
     if (progress.present) {
       map['progress'] = Variable<int>(progress.value);
     }
+    if (expAwarded.present) {
+      map['exp_awarded'] = Variable<bool>(expAwarded.value);
+    }
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
@@ -3198,6 +3254,7 @@ class GoalLogsCompanion extends UpdateCompanion<GoalLog> {
           ..write('goalId: $goalId, ')
           ..write('date: $date, ')
           ..write('progress: $progress, ')
+          ..write('expAwarded: $expAwarded, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
@@ -6524,6 +6581,7 @@ typedef $$GoalLogsTableCreateCompanionBuilder =
       required int goalId,
       required DateTime date,
       Value<int> progress,
+      Value<bool> expAwarded,
       Value<DateTime> updatedAt,
     });
 typedef $$GoalLogsTableUpdateCompanionBuilder =
@@ -6532,6 +6590,7 @@ typedef $$GoalLogsTableUpdateCompanionBuilder =
       Value<int> goalId,
       Value<DateTime> date,
       Value<int> progress,
+      Value<bool> expAwarded,
       Value<DateTime> updatedAt,
     });
 
@@ -6579,6 +6638,11 @@ class $$GoalLogsTableFilterComposer
 
   ColumnFilters<int> get progress => $composableBuilder(
     column: $table.progress,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get expAwarded => $composableBuilder(
+    column: $table.expAwarded,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6635,6 +6699,11 @@ class $$GoalLogsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get expAwarded => $composableBuilder(
+    column: $table.expAwarded,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
@@ -6681,6 +6750,11 @@ class $$GoalLogsTableAnnotationComposer
 
   GeneratedColumn<int> get progress =>
       $composableBuilder(column: $table.progress, builder: (column) => column);
+
+  GeneratedColumn<bool> get expAwarded => $composableBuilder(
+    column: $table.expAwarded,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
@@ -6741,12 +6815,14 @@ class $$GoalLogsTableTableManager
                 Value<int> goalId = const Value.absent(),
                 Value<DateTime> date = const Value.absent(),
                 Value<int> progress = const Value.absent(),
+                Value<bool> expAwarded = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
               }) => GoalLogsCompanion(
                 id: id,
                 goalId: goalId,
                 date: date,
                 progress: progress,
+                expAwarded: expAwarded,
                 updatedAt: updatedAt,
               ),
           createCompanionCallback:
@@ -6755,12 +6831,14 @@ class $$GoalLogsTableTableManager
                 required int goalId,
                 required DateTime date,
                 Value<int> progress = const Value.absent(),
+                Value<bool> expAwarded = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
               }) => GoalLogsCompanion.insert(
                 id: id,
                 goalId: goalId,
                 date: date,
                 progress: progress,
+                expAwarded: expAwarded,
                 updatedAt: updatedAt,
               ),
           withReferenceMapper: (p0) => p0

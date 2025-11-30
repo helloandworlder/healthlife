@@ -56,12 +56,6 @@ class SettingsPage extends ConsumerWidget {
             const Divider(),
             _buildSettingItem(
               context,
-              icon: Icons.person_outline,
-              title: '关于你',
-              onTap: () => context.push(RoutePaths.profile),
-            ),
-            _buildSettingItem(
-              context,
               icon: Icons.sync_outlined,
               title: '数据来源',
               onTap: () => context.push(RoutePaths.healthSource),
@@ -101,18 +95,6 @@ class SettingsPage extends ConsumerWidget {
                   ref.read(settingsNotifierProvider.notifier).setNotificationsEnabled(value);
                 },
               ),
-            ),
-            _buildSettingItem(
-              context,
-              icon: Icons.straighten_outlined,
-              title: '单位',
-              trailing: Text(
-                settings.unitDisplay,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.outline,
-                ),
-              ),
-              onTap: () => _showUnitPicker(context, ref, settings),
             ),
             const Divider(),
             Padding(
@@ -306,71 +288,6 @@ class SettingsPage extends ConsumerWidget {
               },
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  void _showUnitPicker(BuildContext context, WidgetRef ref, SettingsState settings) {
-    showModalBottomSheet(
-      context: context,
-      builder: (ctx) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('体重单位', style: Theme.of(ctx).textTheme.titleMedium),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: _UnitOption(
-                      label: 'kg',
-                      selected: settings.weightUnit == DbConstants.unitKg,
-                      onTap: () => ref.read(settingsNotifierProvider.notifier)
-                          .setWeightUnit(DbConstants.unitKg),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _UnitOption(
-                      label: 'lb',
-                      selected: settings.weightUnit == DbConstants.unitLb,
-                      onTap: () => ref.read(settingsNotifierProvider.notifier)
-                          .setWeightUnit(DbConstants.unitLb),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Text('身高单位', style: Theme.of(ctx).textTheme.titleMedium),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: _UnitOption(
-                      label: 'cm',
-                      selected: settings.heightUnit == DbConstants.unitCm,
-                      onTap: () => ref.read(settingsNotifierProvider.notifier)
-                          .setHeightUnit(DbConstants.unitCm),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _UnitOption(
-                      label: 'inch',
-                      selected: settings.heightUnit == DbConstants.unitInch,
-                      onTap: () => ref.read(settingsNotifierProvider.notifier)
-                          .setHeightUnit(DbConstants.unitInch),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-            ],
-          ),
         ),
       ),
     );
@@ -666,43 +583,4 @@ class SettingsPage extends ConsumerWidget {
   }
 }
 
-class _UnitOption extends StatelessWidget {
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
 
-  const _UnitOption({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          color: selected ? theme.colorScheme.primaryContainer : theme.colorScheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: selected ? theme.colorScheme.primary : Colors.transparent,
-            width: 2,
-          ),
-        ),
-        child: Center(
-          child: Text(
-            label,
-            style: TextStyle(
-              fontWeight: selected ? FontWeight.bold : FontWeight.normal,
-              color: selected ? theme.colorScheme.primary : theme.colorScheme.onSurface,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}

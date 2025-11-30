@@ -10,7 +10,7 @@ class CreatePlanSheet extends StatefulWidget {
   });
 
   final double? initialWeight;
-  final void Function({
+  final Future<void> Function({
     required double initialWeight,
     required double targetWeight,
     required int durationDays,
@@ -160,6 +160,7 @@ class _CreatePlanSheetState extends State<CreatePlanSheet> {
           ),
           const SizedBox(height: 8),
           _buildEstimation(context),
+          if (!_isValid() && _hasInput()) _buildValidationHint(context),
           const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
@@ -171,6 +172,46 @@ class _CreatePlanSheetState extends State<CreatePlanSheet> {
         ],
       ),
     );
+  }
+
+  Widget _buildValidationHint(BuildContext context) {
+    final theme = Theme.of(context);
+    final initial = double.tryParse(_initialWeightController.text);
+    final target = double.tryParse(_targetWeightController.text);
+
+    String hint = '';
+    if (initial == null) {
+      hint = '请输入有效的初始体重';
+    } else if (target == null) {
+      hint = '请输入有效的目标体重';
+    } else if (initial <= target) {
+      hint = '目标体重需小于初始体重';
+    } else if (target <= 0) {
+      hint = '目标体重需大于0';
+    }
+
+    if (hint.isEmpty) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Row(
+        children: [
+          Icon(Icons.info_outline, size: 16, color: theme.colorScheme.error),
+          const SizedBox(width: 8),
+          Text(
+            hint,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.error,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  bool _hasInput() {
+    return _initialWeightController.text.isNotEmpty || 
+           _targetWeightController.text.isNotEmpty;
   }
 
   Widget _buildWeightInput(
@@ -249,16 +290,40 @@ class _CreatePlanSheetState extends State<CreatePlanSheet> {
   bool _isValid() {
     final initial = double.tryParse(_initialWeightController.text);
     final target = double.tryParse(_targetWeightController.text);
-    return initial != null && target != null && initial > target && target > 30;
+    return initial != null && target != null && initial > target && target > 0;
   }
 
-  void _onSubmit() {
-    widget.onCreatePlan(
-      initialWeight: double.parse(_initialWeightController.text),
-      targetWeight: double.parse(_targetWeightController.text),
-      durationDays: _selectedDuration,
-      dailyCalorieDeficit: _dailyDeficit,
-    );
-    Navigator.of(context).pop();
+  Future<void> _onSubmit() async {
+    final initialWeight = double.tryParse(_initialWeightController.text.trim());
+    final targetWeight = double.tryParse(_targetWeightController.text.trim());
+    
+    if (initialWeight == null || targetWeight == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('请输入有效的体重数值')),
+      );
+      return;
+    }
+
+    // Get scaffold messenger before any async operations
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+
+    try {
+      await widget.onCreatePlan(
+        initialWeight: initialWeight,
+        targetWeight: targetWeight,
+        durationDays: _selectedDuration,
+        dailyCalorieDeficit: _dailyDeficit,
+      );
+      
+      navigator.pop();
+      scaffoldMessenger.showSnackBar(
+        const SnackBar(content: Text('计划创建成功！')),
+      );
+    } catch (e) {
+      scaffoldMessenger.showSnackBar(
+        SnackBar(content: Text('创建计划失败: $e')),
+      );
+    }
   }
 }

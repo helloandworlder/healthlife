@@ -47,6 +47,7 @@ sealed class GoalsState with _$GoalsState {
 
 enum ToggleResult {
   incremented,
-  completed,
+  completedWithExp,
+  completedNoExp,
   decremented,
 }

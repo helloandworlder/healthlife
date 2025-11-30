@@ -145,7 +145,7 @@ class _DayDetailProviderElement
 }
 
 String _$activityCalendarNotifierHash() =>
-    r'c0e25560694ecd8144439170474846cd8fa55b66';
+    r'e9de4d19a06adec39fc5d35d389506dbd8e18134';
 
 /// See also [ActivityCalendarNotifier].
 @ProviderFor(ActivityCalendarNotifier)

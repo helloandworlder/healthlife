@@ -35,20 +35,19 @@ class ActivityCalendarNotifier extends _$ActivityCalendarNotifier {
     final dayActivities = <DayActivity>[];
     for (int i = 0; i < 7; i++) {
       final date = weekStart.add(Duration(days: i));
-      final metric = metrics.firstWhere(
+      final metric = metrics.where(
         (m) => m.date.year == date.year && m.date.month == date.month && m.date.day == date.day,
-        orElse: () => _emptyMetric(date),
-      );
+      ).firstOrNull;
 
       dayActivities.add(DayActivity(
         date: date,
-        steps: metric.steps,
-        activeMinutes: metric.activeMinutes,
-        caloriesBurned: metric.caloriesBurned,
-        sleepHours: metric.sleepHours,
+        steps: metric?.steps ?? 0,
+        activeMinutes: metric?.activeMinutes ?? 0,
+        caloriesBurned: metric?.caloriesBurned ?? 0,
+        sleepHours: metric?.sleepHours ?? 0,
         level: ActivityLevelExtension.fromMetrics(
-          steps: metric.steps,
-          activeMinutes: metric.activeMinutes,
+          steps: metric?.steps ?? 0,
+          activeMinutes: metric?.activeMinutes ?? 0,
         ),
       ));
     }
@@ -105,10 +104,6 @@ class ActivityCalendarNotifier extends _$ActivityCalendarNotifier {
     return streak;
   }
 
-  dynamic _emptyMetric(DateTime date) {
-    return _EmptyMetric(date);
-  }
-
   Future<void> selectWeek(DateTime weekStart) async {
     final current = state.valueOrNull;
     if (current == null) return;
@@ -134,15 +129,6 @@ class ActivityCalendarNotifier extends _$ActivityCalendarNotifier {
   Future<void> refresh() async {
     ref.invalidateSelf();
   }
-}
-
-class _EmptyMetric {
-  _EmptyMetric(this.date);
-  final DateTime date;
-  int get steps => 0;
-  int get activeMinutes => 0;
-  int get caloriesBurned => 0;
-  double get sleepHours => 0;
 }
 
 class ActivityCalendarState {

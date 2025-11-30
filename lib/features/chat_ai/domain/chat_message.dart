@@ -4,6 +4,19 @@ part 'chat_message.freezed.dart';
 
 enum MessageRole { user, assistant, system }
 
+/// Tool 执行结果
+class ToolResult {
+  final String toolName;
+  final bool success;
+  final String? message;
+
+  const ToolResult({
+    required this.toolName,
+    required this.success,
+    this.message,
+  });
+}
+
 @freezed
 sealed class ChatMessage with _$ChatMessage {
   const factory ChatMessage({
@@ -13,6 +26,8 @@ sealed class ChatMessage with _$ChatMessage {
     required DateTime timestamp,
     @Default(false) bool isLoading,
     String? error,
+    String? thinkingContent,
+    ToolResult? toolResult,
   }) = _ChatMessage;
 
   const ChatMessage._();
@@ -41,6 +56,8 @@ sealed class ChatMessage with _$ChatMessage {
 
   bool get isUser => role == MessageRole.user;
   bool get isAssistant => role == MessageRole.assistant;
+  bool get hasThinking => thinkingContent != null && thinkingContent!.isNotEmpty;
+  bool get hasToolResult => toolResult != null;
 }
 
 @freezed
@@ -129,14 +146,14 @@ class QuickAction {
 
 const quickActions = [
   QuickAction(
+    id: 'create_plan',
+    label: '创建减重计划',
+    prompt: '我想创建一个减重计划，我现在70kg，想减到65kg，请帮我制定一个30天的计划',
+  ),
+  QuickAction(
     id: 'diet_analysis',
     label: '今日饮食分析',
     prompt: '请分析一下我今天的饮食情况，给我一些建议',
-  ),
-  QuickAction(
-    id: 'weekly_goal',
-    label: '制定本周目标',
-    prompt: '帮我制定一个适合我的本周健康目标',
   ),
   QuickAction(
     id: 'sleep_advice',

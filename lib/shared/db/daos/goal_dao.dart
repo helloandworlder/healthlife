@@ -129,6 +129,21 @@ class GoalDao extends DatabaseAccessor<AppDatabase> with _$GoalDaoMixin {
     return 1;
   }
 
+  Future<void> markExpAwarded(int goalId, DateTime date) async {
+    final dateOnly = DateTime(date.year, date.month, date.day);
+    final log = await getLogForDate(goalId, dateOnly);
+    if (log != null) {
+      await (update(goalLogs)..where((t) => t.id.equals(log.id))).write(
+        const GoalLogsCompanion(expAwarded: Value(true)),
+      );
+    }
+  }
+
+  Future<bool> isExpAwarded(int goalId, DateTime date) async {
+    final log = await getLogForDate(goalId, date);
+    return log?.expAwarded ?? false;
+  }
+
   Future<int> decrementProgress(int goalId, DateTime date) async {
     final dateOnly = DateTime(date.year, date.month, date.day);
     final log = await getLogForDate(goalId, dateOnly);

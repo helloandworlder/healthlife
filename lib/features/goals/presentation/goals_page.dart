@@ -72,29 +72,48 @@ class GoalsPage extends ConsumerWidget {
     if (goalsState.goals.isEmpty) {
       return SliverFillRemaining(
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.flag_outlined,
-                size: 64,
-                color: theme.colorScheme.outline,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                '还没有目标',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  color: theme.colorScheme.outline,
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primaryContainer.withOpacity(0.3),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.flag_outlined,
+                    size: 48,
+                    color: theme.colorScheme.primary,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                '点击下方按钮创建你的第一个目标',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.outline,
+                const SizedBox(height: 24),
+                Text(
+                  '开始你的健康之旅',
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 12),
+                Text(
+                  '设定每日小目标，养成健康好习惯\n完成目标可以获得经验值，升级你的宠物',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.outline,
+                    height: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 32),
+                FilledButton.icon(
+                  onPressed: () => _showCreateGoalSheet(context),
+                  icon: const Icon(Icons.add),
+                  label: const Text('创建第一个目标'),
+                ),
+              ],
+            ),
           ),
         ),
       );
@@ -104,7 +123,12 @@ class GoalsPage extends ConsumerWidget {
       delegate: SliverChildBuilderDelegate(
         (context, index) {
           if (index == 0) {
-            return _buildSummaryCard(context, goalsState);
+            return Column(
+              children: [
+                _buildGuideTip(context, goalsState),
+                _buildSummaryCard(context, goalsState),
+              ],
+            );
           }
           final goalIndex = index - 1;
           if (goalIndex >= goalsState.goals.length) return null;
@@ -116,6 +140,63 @@ class GoalsPage extends ConsumerWidget {
           );
         },
         childCount: goalsState.goals.length + 1,
+      ),
+    );
+  }
+
+  Widget _buildGuideTip(BuildContext context, GoalsState goalsState) {
+    final theme = Theme.of(context);
+    final allCompleted = goalsState.completedCount == goalsState.totalCount;
+    
+    if (allCompleted && goalsState.totalCount > 0) {
+      return Container(
+        margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.green.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.green.withOpacity(0.3)),
+        ),
+        child: Row(
+          children: [
+            const Text('🎉', style: TextStyle(fontSize: 20)),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                '太棒了！今日目标全部完成',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: Colors.green.shade700,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primaryContainer.withOpacity(0.3),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.tips_and_updates_outlined, 
+               size: 20, 
+               color: theme.colorScheme.primary),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              '点击目标卡片打卡，长按可编辑或删除',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -171,7 +252,7 @@ class GoalsPage extends ConsumerWidget {
   Future<void> _handleGoalTap(BuildContext context, WidgetRef ref, GoalWithProgress goal) async {
     final result = await ref.read(goalsNotifierProvider.notifier).toggleGoalCompletion(goal.goal.id);
 
-    if (result == ToggleResult.completed) {
+    if (result == ToggleResult.completedWithExp) {
       HapticFeedback.mediumImpact();
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -183,6 +264,17 @@ class GoalsPage extends ConsumerWidget {
               ],
             ),
             behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } else if (result == ToggleResult.completedNoExp) {
+      HapticFeedback.lightImpact();
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('目标已完成'),
+            behavior: SnackBarBehavior.floating,
+            duration: Duration(seconds: 1),
           ),
         );
       }

@@ -2,7 +2,7 @@ class DbConstants {
   DbConstants._();
 
   static const String databaseName = 'healthlife.db';
-  static const int schemaVersion = 1;
+  static const int schemaVersion = 2;
 
   // Setting Keys
   static const String keyWeightUnit = 'weight_unit';
